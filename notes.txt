@@ -1,0 +1,16 @@
+five V's of data:
+
+- Volume
+- Velocity
+- Variety
+- Veracity
+- Value
+
+
+DAGs -> Directed Acyclic Graph
+
+
+in folder on console:
+
+etlweather> astro dev init
+etlweather> astro dev start
