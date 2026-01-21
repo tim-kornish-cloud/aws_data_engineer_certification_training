@@ -2,3 +2,7 @@ s3/.terraform.lock.hcl
 s3/.terraform/providers/registry.terraform.io/hashicorp/aws/6.28.0/windows_amd64/LICENSE.txt
 s3/.terraform/providers/registry.terraform.io/hashicorp/aws/6.28.0/windows_amd64/terraform-provider-aws_v6.28.0_x5.exe
 ETLWeather/aws_db_terraform/terraform.tfvars
+ETLWeather/aws_db_terraform/.terraform.lock.hcl
+ETLWeather/aws_db_terraform/.terraform.tfstate.lock.info
+ETLWeather/aws_db_terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/6.28.0/windows_amd64/LICENSE.txt
+ETLWeather/aws_db_terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/6.28.0/windows_amd64/terraform-provider-aws_v6.28.0_x5.exe
