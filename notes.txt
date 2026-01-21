@@ -14,3 +14,6 @@ in folder on console:
 
 etlweather> astro dev init
 etlweather> astro dev start
+
+FROM apache/airflow:2.0.0
+RUN pip install --no-cache-dir apache-airflow-providers-http

@@ -6,12 +6,12 @@ Description: Set up a dag to schedule importing weather data into a postgres db 
 """
 
 from airflow import DAG
-from airflow.providers.https.hooks.http import HttpHook
+from airflow.providers.http.hooks.http import HttpHook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.decorators import task
-from airflow.utils.dates import days_ago
-import pandas as pd
-import psycopg2.extras as extras
+#from airflow.utils.dates import days_ago
+from datetime import datetime
+import json
 
 #set latitude and longitude
 # set for London, UK
@@ -22,15 +22,12 @@ API_CONN_ID = 'open_meteo_api'
 
 default_args = {
     'owner' : 'airflow',
-    'start_date' : days_ago(1)
+    'start_date' : datetime(2023, 1, 1) #days_ago(1)
 }
 
 
 # Create a DAG
-with DAG(dag_id = 'weather_etl_pipeline',
-         default_args = default_args,
-         schedule_interval = '@daily',
-         catchup = False) as dags:
+with DAG(dag_id = 'weather_etl_pipeline', default_args = default_args, schedule = '@daily', catchup = False) as dags:
     @task()
     def extract_weather_data():
         """Extract weather data from Open-Meteo API using Airflow Connection."""
@@ -42,13 +39,12 @@ with DAG(dag_id = 'weather_etl_pipeline',
         url = 'https://api.open-meteo.com'
         endpoint = f'/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&current_weather=true'
 
-        request = url + endpoint
 
         # make a request via http hook
         response = http_hook.run(endpoint)
 
         #check response or raise exception
-        if response.status_code = 200:
+        if response.status_code == 200:
             return response.json()
         else:
             raise Exception(f"failed to fetch weather data: {response.status_code}")
@@ -69,7 +65,7 @@ with DAG(dag_id = 'weather_etl_pipeline',
         }
         return transformed_data
 
-    @tasks
+    @task
     def load_weather_data(transformed_data):
         """Load transformed data into PostgreSQL"""
         pg_hook = PostgresHook(posgres_conn_id=POSTGRES_CONN_ID)
@@ -95,7 +91,7 @@ with DAG(dag_id = 'weather_etl_pipeline',
         cursor.execute("""
         INSERT Into weather_data (latitude, longitude, temperature, windspeed, winddirection, weathercode)
         VALUES (%s, %s, %s, %s, %s, %s)
-        """),
+        """,
         (
             transformed_data['latitude'],
             transformed_data['longitude'],
@@ -110,5 +106,5 @@ with DAG(dag_id = 'weather_etl_pipeline',
 
     # Create data workflow - ETL pipeline steps
     weather_data = extract_weather_data()
-    transformed_data = transformed_weather_data(weather_data)
+    transformed_data = transform_weather_data(weather_data)
     load_weather_data(transformed_data)
