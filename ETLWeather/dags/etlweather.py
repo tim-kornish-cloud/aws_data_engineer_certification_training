@@ -15,8 +15,8 @@ import json
 
 #set latitude and longitude
 # set for London, UK
-LATITUDE = '51.5074'
-LONGITUDE = '-0.1278'
+LATITUDE = '51.5073' # 4
+LONGITUDE = '-0.1277' # 8
 POSTGRES_CONN_ID = 'postgres_default'
 API_CONN_ID = 'open_meteo_api'
 
@@ -71,13 +71,13 @@ with DAG(dag_id = 'weather_etl_pipeline', default_args = default_args, schedule 
         pg_hook = PostgresHook(posgres_conn_id=POSTGRES_CONN_ID)
         conn = pg_hook.get_conn()
         cursor = conn.cursor()
-        data_df = pd.DataFrame(transformed_data)
 
         # Create table if it does not exist in postgres database
         cursor.execute("""
+
         CREATE TABLE IF NOT EXISTS weather_data (
         latitude FLOAT,
-        longitute FLOAT,
+        longitude FLOAT,
         temperature FLOAT,
         windspeed FLOAT,
         winddirection FLOAT,
@@ -87,7 +87,6 @@ with DAG(dag_id = 'weather_etl_pipeline', default_args = default_args, schedule 
         """)
 
         # Insert transformed data into the table
-        # original way commented out, modifying to use execute values for the insert
         cursor.execute("""
         INSERT Into weather_data (latitude, longitude, temperature, windspeed, winddirection, weathercode)
         VALUES (%s, %s, %s, %s, %s, %s)
